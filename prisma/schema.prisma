@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// pscale cmds
+// connect to db
+//    pscale connect scout_waffle shadow --port 3309
+
+// prisma commands
+// migrate cmd
+// 		pnpx prisma migrate dev --name init
+// format cmd
+// 		pnpx prisma format
+// prisma studio cmd (visualize db)
+// 		pnpx prisma studio 
+// generate cmd (update ts imporst)
+// 		pnpx prisma generate
+generator client {
+  provider        = "prisma-client-js"
+  // output   = "../node_modules/@prisma/client"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Game {
+  id            String         @id @unique @default(cuid())
+  name          String         
+  tournament    String
+  // any points scored
+  markers       Points[]
+  // endgame
+  rankingPoints RankingPoint[]
+  weWin         Win
+  ourTeam       Team
+  // meta data
+  version   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // name in the database
+  @@map(name: "game")
+}
+
+// teleop model
+model Points {
+  id     String  @id @unique @default(cuid())
+  // isAuto
+  isAuto Boolean
+  pointType  String
+  pointValue Int
+  // position in the game
+  left     Float?
+  top      Float?
+  // launch data
+  launches Launch[]
+  // relation data
+  Game   Game?   @relation(fields: [gameId], references: [id])
+  gameId String?
+  // name in the database
+  @@map(name: "points")
+}
+
+// teleop launch
+model Launch {
+  id   String       @id @unique @default(cuid())
+  type LaunchStatus
+  // relation data
+  Marker   Points @relation(fields: [markerId], references: [id])
+  markerId String
+  // name in the database
+  @@map(name: "launch")
+}
+
+// teleop enum
+enum LaunchStatus {
+  GotInUpper
+  GotInLower
+  BounceOut
+  MissClose
+  MissFar
+  NoLaunch
+  @@map("launchStatus")
+}
+
+// endgame model
+model RankingPoint {
+  id          String @id @unique @default(cuid())
+  type        String
+  numberScore Int
+  minScore    Int
+  maxScore    Int
+  // relation data
+  Game   Game   @relation(fields: [gameId], references: [id])
+  gameId String
+  @@map(name: "rankingPoint")
+}
+
+// endgame enums
+enum Team {
+  Red
+  Blue
+}
+
+enum Win {
+  Win
+  Lose
+  Tie
+}
+
+
