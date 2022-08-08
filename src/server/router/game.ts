@@ -16,6 +16,18 @@ export const gameRouter = createRouter()
   })
   .query("getAll", {
     async resolve({ ctx }) {
-      return await ctx.prisma.game.findMany();
+      return await ctx.prisma.game.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          markers: {
+            include: {
+              launches: true
+            }
+          },
+          rankingPoints: true,
+        }
+      });
     },
   });
