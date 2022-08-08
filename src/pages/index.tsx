@@ -10,7 +10,10 @@ type TechnologyCardProps = {
 
 const Home: NextPage = () => {
   const hello = trpc.useQuery(["game.hello", { text: "from tRPC" }]);
-
+  const { data } = trpc.useQuery(["game.getUniqueTournaments"]);
+  if (data) {
+    console.log(data);
+  }
   return (
     <>
       <Head>

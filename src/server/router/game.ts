@@ -18,7 +18,7 @@ export const gameRouter = createRouter()
     async resolve({ ctx }) {
       return await ctx.prisma.game.findMany({
         orderBy: {
-          createdAt: "desc",
+          createdAt: "asc",
         },
         include: {
           markers: {
@@ -29,5 +29,18 @@ export const gameRouter = createRouter()
           rankingPoints: true,
         }
       });
+    },
+  })
+  .query("getUniqueTournaments", {
+    async resolve ({ ctx }) {
+      // TODO: This is a hacky way to get the unique tournaments.
+      const tournaments =  await ctx.prisma.game.findMany({
+        select: {
+          tournament: true,
+        }
+      });
+      const tournamentsList = tournaments.map(tournament => tournament.tournament);
+      // return unique tournaments
+      return [...new Set(tournamentsList)];
     },
   });
