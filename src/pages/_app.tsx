@@ -14,7 +14,7 @@ import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 
 // component imports
 import Head from 'next/head';
-import Layout from "@/components/layout";
+import Layout from "@/components/Layout";
 // import { GameContextProvider, useGameContext } from "@/context/GameContext";
 // import { IconCheck, IconX } from "@tabler/icons";
 
