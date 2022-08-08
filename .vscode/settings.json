@@ -1,4 +1,7 @@
 {
   "WillLuke.nextjs.hasPrompted": true,
-  "deepscan.enable": true
+  "deepscan.enable": true,
+  "cSpell.words": [
+    "maxage"
+  ]
 }
