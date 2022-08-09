@@ -1,4 +1,4 @@
-import { AppShell, Footer, useMantineTheme, Button, Navbar, Burger, Header, MediaQuery, Text, Select } from '@mantine/core';
+import { AppShell, useMantineTheme, Navbar, Burger, Header, MediaQuery, Text, Select } from '@mantine/core';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
 import React, { useState } from "react";
 import { useMediaQuery } from '@mantine/hooks';
@@ -9,10 +9,9 @@ type props = {
 
 
 const Layout: React.FC<props> = (props) => {
-  const isMobile = useMediaQuery('(max-width: 600px)');
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const { uniqueTournaments, currentTournament, setCurrentTournament } = useGamesContext();
+  const { uniqueTournaments, currentTournament, setCurrentTournament, games } = useGamesContext();
   return (
     <>
       <AppShell
@@ -29,6 +28,11 @@ const Layout: React.FC<props> = (props) => {
               data={uniqueTournaments.map(tournament => ({ value: tournament, label: tournament }))}
               value={currentTournament}
               onChange={setCurrentTournament}
+            />
+            <Select
+              label="Game"
+              placeholder="Pick a Game"
+              data={games.map(game => ({ value: game.id, label: game.name}))}
             />
           </Navbar>
         }
