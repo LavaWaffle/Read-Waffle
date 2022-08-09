@@ -1,5 +1,7 @@
+import { useGamesContext } from "@/context/GamesContext";
 import type { NextPage } from "next";
 import Head from "next/head";
+import { useEffect } from "react";
 import { trpc } from "../utils/trpc";
 
 type TechnologyCardProps = {
@@ -10,10 +12,15 @@ type TechnologyCardProps = {
 
 const Home: NextPage = () => {
   const hello = trpc.useQuery(["game.hello", { text: "from tRPC" }]);
-  const { data } = trpc.useQuery(["game.getUniqueTournaments"]);
-  if (data) {
-    console.log(data);
-  }
+  const { data: tournamentData } = trpc.useQuery(["game.getUniqueTournaments"]);
+  const { setUniqueTournaments } = useGamesContext();
+
+  useEffect(() => {
+    if (tournamentData) {
+      setUniqueTournaments(tournamentData);
+    }
+  }, [tournamentData])
+  
   return (
     <>
       <Head>

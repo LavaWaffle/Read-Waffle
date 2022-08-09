@@ -15,7 +15,7 @@ import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 // component imports
 import Head from 'next/head';
 import Layout from "@/components/Layout";
-// import { GameContextProvider, useGameContext } from "@/context/GameContext";
+import { GamesContextProvider } from "@/context/GamesContext";
 // import { IconCheck, IconX } from "@tabler/icons";
 
 const MyApp = (props: AppProps & { colorScheme: ColorScheme }) => {
@@ -46,13 +46,11 @@ const MyApp = (props: AppProps & { colorScheme: ColorScheme }) => {
       <ColorSchemeProvider colorScheme={localColorScheme} toggleColorScheme={toggleColorScheme}>
         <MantineProvider theme={{ colorScheme: localColorScheme }} withGlobalStyles withNormalizeCSS>
           <NotificationsProvider position="top-right">
-            {/* <GameContextProvider> */}
+            <GamesContextProvider>
               <Layout> 
-
-                  <Component {...pageProps} />
-
+                <Component {...pageProps} />
               </Layout>   
-            {/* </GameContextProvider> */}
+            </GamesContextProvider>
           </NotificationsProvider>
         </MantineProvider>
       </ColorSchemeProvider>
