@@ -1,7 +1,8 @@
-import { AppShell, Footer, useMantineTheme, Button } from '@mantine/core';
+import { AppShell, Footer, useMantineTheme, Button, Navbar, Burger, Header, MediaQuery, Text, Select } from '@mantine/core';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
-import React from "react";
+import React, { useState } from "react";
 import { useMediaQuery } from '@mantine/hooks';
+import { useGamesContext } from '@/context/GamesContext';
 type props = {
   children: JSX.Element
 }
@@ -10,6 +11,8 @@ type props = {
 const Layout: React.FC<props> = (props) => {
   const isMobile = useMediaQuery('(max-width: 600px)');
   const theme = useMantineTheme();
+  const [opened, setOpened] = useState(false);
+  const { uniqueTournaments, currentTournament, setCurrentTournament } = useGamesContext();
   return (
     <>
       <AppShell
@@ -18,40 +21,33 @@ const Layout: React.FC<props> = (props) => {
             background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
           },
         }}
-        footer={
-          <Footer height={60} p="md">
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>   
+        navbar={
+          <Navbar p="md" hiddenBreakpoint="sm" hidden={!opened} width={{ sm: 200, lg: 300}}>
+            <Select 
+              label="Tournament"
+              placeholder="Pick a Tournament"
+              data={uniqueTournaments.map(tournament => ({ value: tournament, label: tournament }))}
+              value={currentTournament}
+              onChange={setCurrentTournament}
+            />
+          </Navbar>
+        }
+        header={
+          <Header height={70} p="md">
+            <div style={{ display: 'flex', alignItems: 'center', height: '100%', justifyContent: 'space-between'}}>
+              <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+                <Burger
+                  opened={opened}
+                  onClick={() => setOpened((o) => !o)}
+                  size="sm"
+                  color={theme.colors.gray[6]}
+                  mr="xl"
+                />
+              </MediaQuery>
+              <Text className='text-3xl'>Read Waffle</Text>
               <ColorSchemeToggle />
-              {/* middle */}
-              <div style={{paddingLeft: isMobile === false ? "4.5rem" : "", gap: "2rem"}} >
-                <Button 
-                  style={{marginTop: '-0.25rem', marginRight: '1rem'}} 
-                  variant="outline" 
-                  color='pink'
-                >
-                  Auto Data
-                </Button>
-
-                <Button 
-                  style={{marginTop: '-0.25rem'}} 
-                  variant="outline" 
-                  color='pink'
-                >
-                  End Game Data
-                </Button>
-              </div>
-              {/* right */}
-              <div>
-                <Button 
-                    style={{marginTop: '-0.25rem'}} 
-                    variant="outline" 
-                    color='pink'
-                  >
-                  Upload
-                </Button>
-              </div>
-              </div>
-          </Footer>
+            </div>
+          </Header>
         }
       >
         <main>
