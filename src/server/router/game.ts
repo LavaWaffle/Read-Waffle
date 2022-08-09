@@ -31,6 +31,27 @@ export const gameRouter = createRouter()
       });
     },
   })
+  .query("getSpecificGames", {
+    input: z.object({
+      tournament: z.string().nullish(),
+    }),
+    async resolve({ ctx, input }) {
+      if (input.tournament === null) return "Tournament is required";
+      return await ctx.prisma.game.findMany({
+        where: {
+          tournament: input.tournament,
+        },
+        include: {
+          markers: {
+            include: {
+              launches: true
+            }
+          },
+          rankingPoints: true,
+        }
+      });
+    }
+  })
   .query("getUniqueTournaments", {
     async resolve ({ ctx }) {
       // TODO: This is a hacky way to get the unique tournaments.

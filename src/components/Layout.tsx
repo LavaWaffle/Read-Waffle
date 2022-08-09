@@ -1,8 +1,9 @@
 import { AppShell, useMantineTheme, Navbar, Burger, Header, MediaQuery, Text, Select } from '@mantine/core';
 import { ColorSchemeToggle } from './ColorSchemeToggle';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMediaQuery } from '@mantine/hooks';
 import { useGamesContext } from '@/context/GamesContext';
+import { trpc } from '@/utils/trpc';
 type props = {
   children: JSX.Element
 }
@@ -11,7 +12,33 @@ type props = {
 const Layout: React.FC<props> = (props) => {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState(false);
-  const { uniqueTournaments, currentTournament, setCurrentTournament, games } = useGamesContext();
+  const { uniqueTournaments, currentTournament, setCurrentTournament, setGames, games } = useGamesContext();
+  
+  const { refetch } = trpc.useQuery([
+    'game.getSpecificGames', 
+    { tournament: currentTournament },
+  ], { 
+    // don't call on first render
+    enabled: false, 
+    refetchOnWindowFocus: false
+  });
+
+  // every time currentTournament changes, refetch the games
+  useEffect(() => {
+    function fetchGames() {
+      if (currentTournament === null) return;
+      refetch().then(({ data }) => {
+        if (data === undefined) return;
+        if (data === "Tournament is required") {
+          console.log(data);
+          return;
+        };
+        setGames(data);
+      })
+    }
+    fetchGames();
+  }, [currentTournament])
+
   return (
     <>
       <AppShell

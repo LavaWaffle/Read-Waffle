@@ -1,6 +1,6 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from 'react';
-import { prisma } from "@/server/db/client";
 import type { Game as game, RankingPoint as rankingPoint, Points as points, Launch as launch } from '@prisma/client';
+import { trpc } from '@/utils/trpc';
 
 export type Points = points & {
   launches: launch[],
@@ -21,6 +21,9 @@ type GameContext = {
   currentTournament: string | null,
   setCurrentTournament: Dispatch<SetStateAction<string | null>>,
   games: Game[],
+  setGames: Dispatch<SetStateAction<Game[]>>,
+  currentGame: Game | null,
+  setCurrentGame: Dispatch<SetStateAction<Game | null>>,
 }
 
 const GameContext = createContext({} as GameContext);
@@ -33,29 +36,7 @@ export function GamesContextProvider({ children }: GameContextProviderProps) {
   const [uniqueTournaments, setUniqueTournaments] = useState<string[]>([]);
   const [currentTournament, setCurrentTournament] = useState<string | null>(null);
   const [games, setGames] = useState<Game[]>([]);
-  useEffect(() => {
-    async function fetchGames() {
-      if (currentTournament === null) return;
-      const games = await prisma.game.findMany({
-        where: {
-          tournament: currentTournament,
-        },
-        orderBy: {
-          createdAt: 'asc',
-        },
-        include: {
-          markers: {
-            include: {
-              launches: true
-            }
-          },
-          rankingPoints: true,
-        }
-      })
-      setGames(games);
-    }
-    fetchGames();
-  }, [currentTournament])
+  const [currentGame, setCurrentGame] = useState<Game | null>(null);
   return (
     <GameContext.Provider value={{
       uniqueTournaments,
@@ -63,6 +44,9 @@ export function GamesContextProvider({ children }: GameContextProviderProps) {
       currentTournament,
       setCurrentTournament,
       games,
+      setGames,
+      currentGame,
+      setCurrentGame,
     }}>
       {children}
     </GameContext.Provider>

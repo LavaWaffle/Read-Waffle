@@ -12,7 +12,7 @@ type TechnologyCardProps = {
 
 const Home: NextPage = () => {
   const hello = trpc.useQuery(["game.hello", { text: "from tRPC" }]);
-  const { data: tournamentData } = trpc.useQuery(["game.getUniqueTournaments"]);
+  const { data: tournamentData } = trpc.useQuery(["game.getUniqueTournaments"], { refetchOnWindowFocus: false});
   const { setUniqueTournaments } = useGamesContext();
 
   useEffect(() => {
